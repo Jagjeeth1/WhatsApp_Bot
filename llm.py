@@ -34,7 +34,7 @@ Message:
 
     try:
         response = requests.post(
-            "https://localhost:11434/api/generate",
+            "http://localhost:11434/api/generate",
             json={
                 "model": "llama3:8b",
                 "prompt": prompt,
@@ -49,7 +49,7 @@ Message:
 
         raw_output = response.json()["response"].strip().upper()
 
-        print("🧠 RAW LLM OUTPUT:", raw_output)
+        print(" RAW LLM OUTPUT:", raw_output)
 
         if raw_output.startswith("TASK"):
             return {"is_task": True}
