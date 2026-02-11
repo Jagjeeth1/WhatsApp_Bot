@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from db import save_message
 from llm import ask_llama
-from linear import create_linear_issue   
+from linear import create_linear_issue
 
 app = FastAPI()
 
@@ -16,28 +16,32 @@ async def webhook(request: Request):
 
     data = await request.json()
 
-   
     try:
         message_text = data["messages"][0]["text"]["body"]
     except Exception:
         print("Could not extract message from payload:", data)
         return {"status": "ignored"}
 
-    print("\n MESSAGE:", message_text)
+    print("\nMESSAGE:", message_text)
 
-   
     save_message(message_text)
 
     try:
-       
         result = ask_llama(message_text)
         print("AI SAYS:", result)
 
-        
-        if result.get("is_task"):
-            print("TASK DETECTED — Creating Linear ticket...")
+        if not result.get("is_task"):
+            print("Not a task. Ignoring.")
+            return {"status": "not_a_task"}
 
-            create_linear_issue(message_text)
+        
+        if result.get("needs_clarification"):
+            print("Task detected but needs clarification.")
+
+            return {"status": "needs_clarification"}
+
+        print("Clear task detected — Creating Linear ticket...")
+        create_linear_issue(message_text)
 
     except Exception as e:
         print("Ollama error:", e)
