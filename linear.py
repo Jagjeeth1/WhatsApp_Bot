@@ -36,8 +36,7 @@ def create_linear_issue(title):
         "title": title,
         "teamId": TEAM_ID
     }
-    print("TEAM_ID LOADED:", TEAM_ID)
-
+    
     try:
         response = requests.post(
             url,
