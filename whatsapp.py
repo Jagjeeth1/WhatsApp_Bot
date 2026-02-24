@@ -9,7 +9,7 @@ WHAPI_TOKEN = os.getenv("WHAPI_TOKEN")
 URL = "https://gate.whapi.cloud/messages/text"
 
 
-def send_whatsapp_message(chat_id, message):
+def send_whatsapp_message(to, message):
 
     headers = {
         "Authorization": f"Bearer {WHAPI_TOKEN}",
@@ -17,13 +17,13 @@ def send_whatsapp_message(chat_id, message):
     }
 
     payload = {
-        "to": chat_id,
+        "to": to,
         "body": message
     }
 
     try:
         response = requests.post(URL, json=payload, headers=headers)
-        print("WhatsApp message sent:", response.json())
+        print("WhatsApp response:", response.json())
 
     except Exception as e:
         print("WhatsApp send error:", e)

@@ -3,6 +3,7 @@ from db import save_message
 from llm import ask_llama
 from linear import create_linear_issue
 from whatsapp import send_whatsapp_message
+from scheduler import start_scheduler
 
 app = FastAPI()
 
@@ -25,7 +26,7 @@ async def webhook(request: Request):
 
     try:
         message_text = data["messages"][0]["text"]["body"]
-        chat_id = data["messages"][0]["chat_id"]
+        chat_id = data["messages"][0].get("chat") or data["messages"][0].get("chat_id")
     except Exception:
         print("Could not extract message from payload:", data)
         return {"status": "ignored"}
@@ -33,7 +34,7 @@ async def webhook(request: Request):
     print("\nMESSAGE:", message_text)
 
     save_message(message_text)
-
+    
     try:
         result = ask_llama(message_text)
         print("AI SAYS:", result)
@@ -65,4 +66,8 @@ async def webhook(request: Request):
     except Exception as e:
         print("Error:", e)
 
-    return {"status": "ok"}
+        return {"status": "ok"}
+
+
+
+start_scheduler()
